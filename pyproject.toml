@@ -15,6 +15,8 @@ poethepoet = "^0.10.0"
 sklearn = "^0.0"
 pandas = "^1.2.4"
 comet-ml = "^3.9.1"
+pandasql = "^0.7.3"
+nltk = "^3.6.2"
 
 
 
