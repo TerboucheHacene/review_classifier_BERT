@@ -14,7 +14,7 @@ import torch.utils.data
 
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning import Trainer
-from pytorch_lightning import DDPPlugin
+from pytorch_lightning.plugins import DDPPlugin
 
 
 from transformers import RobertaModel, RobertaConfig
@@ -31,18 +31,19 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--max_epochs', type=int, default=1)
     parser.add_argument('--freeze_bert_layer', type=eval, default=False)
-    parser.add_argument('--learning_rate', type=float, default=0.01)
+    parser.add_argument('--learning_rate', type=float, default=0.001)
     parser.add_argument('--momentum', type=float, default=0.5)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--max_seq_length', type=int, default=128)
     # Container environment
-    parser.add_argument('--model_dir', type=str, default=os.environ['SM_MODEL_DIR'])
-    parser.add_argument('--train_data', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     parser.add_argument(
-        '--validation_data', type=str, default=os.environ['SM_CHANNEL_VALIDATION']
+        '--train_data', type=str, default="./output_data/sentiment/train.tsv"
     )
-    parser.add_argument('--output_dir', type=str, default=os.environ['SM_OUTPUT_DIR'])
-    parser.add_argument('--num_gpus', type=int, default=os.environ['SM_NUM_GPUS'])
+    parser.add_argument(
+        '--validation_data', type=str, default="./output_data/sentiment/train.tsv"
+    )
+    parser.add_argument('--output_dir', type=str, default="./results/")
+    parser.add_argument('--num_gpus', type=int, default=0)
     return parser.parse_args()
 
 
@@ -60,7 +61,11 @@ def main():
     )
 
     config = configure_model()
-    roberta_model = RobertaModel.from_pretrained('roberta-base', config=config)
+    # roberta_model = RobertaModel.from_pretrained('roberta-base', config=config)
+    roberta_model = RobertaForSequenceClassification.from_pretrained(
+        'roberta-base', config=config
+    )
+
     model = SequenceClassificationModel(
         bert_model=roberta_model,
         num_labels=3,
@@ -70,19 +75,21 @@ def main():
         batch_size=args.batch_size,
     )
 
-    trainer = pl.Trainer(
-        gpus=args.gpus,
+    trainer = Trainer(
+        gpus=args.num_gpus,
         max_epochs=args.max_epochs,
         accelerator=None,
         num_sanity_val_steps=-1,
         val_check_interval=0.05,
         terminate_on_nan=True,
+        logger=experiment,
+        log_every_n_steps=1,
     )
 
-    train_data_loader, df_train = create_data_loader(
+    train_data_loader = create_data_loader(
         args.train_data, args.batch_size, train_or_valid="train"
     )
-    val_data_loader, df_val = create_data_loader(
+    val_data_loader = create_data_loader(
         args.validation_data, args.batch_size, train_or_valid="valid"
     )
 
