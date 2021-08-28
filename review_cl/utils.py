@@ -6,7 +6,13 @@ PRE_TRAINED_MODEL_NAME = 'roberta-base'
 
 
 def configure_model():
-    config = RobertaConfig.from_pretrained(PRE_TRAINED_MODEL_NAME)
+    classes = [-1, 0, 1]
+    config = RobertaConfig.from_pretrained(
+        PRE_TRAINED_MODEL_NAME,
+        num_labels=len(classes),
+        id2label={0: -1, 1: 0, 2: 1},
+        label2id={-1: 0, 0: 1, 1: 2},
+    )
     config.output_attentions = True
     return config
 
