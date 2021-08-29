@@ -11,7 +11,7 @@ class SequenceClassificationModel(pl.LightningModule):
         self,
         bert_model,
         num_labels,
-        freeze_bert_layer=True,
+        freeze_bert_layer=False,
         learning_rate=0.001,
         max_epochs=1,
         batch_size=64,
@@ -24,8 +24,6 @@ class SequenceClassificationModel(pl.LightningModule):
         self.embed_size = bert_model.config.hidden_size
         self.freeze_bert_layer = freeze_bert_layer
         self.bert_model = bert_model
-        self.dropout = nn.Dropout(0.2)
-        self.classifier = nn.Linear(self.embed_size, num_labels)
 
         if self.freeze_bert_layer:
             print("Freezing BERT base layers...")
@@ -37,11 +35,7 @@ class SequenceClassificationModel(pl.LightningModule):
     def forward(self, X):
         # (B, S, H)
         hidden = self.bert_model(X)[0]
-        # (B, H)
-        hidden = hidden[:, 0]
-        pooled_hidden = self.dropout(hidden)
-        logits = self.classifier(pooled_hidden)
-        return logits
+        return hidden
 
     def shared_step(self, batch):
         X, y = batch
