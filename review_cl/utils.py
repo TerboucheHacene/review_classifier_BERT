@@ -7,6 +7,7 @@ PRE_TRAINED_MODEL_NAME = 'roberta-base'
 
 def configure_model():
     classes = [-1, 0, 1]
+
     config = RobertaConfig.from_pretrained(
         PRE_TRAINED_MODEL_NAME,
         num_labels=len(classes),
@@ -33,8 +34,8 @@ def save_transformer_model(model, model_dir):
     model.save_pretrained(path)
 
 
-def save_pytorch_model(model, model_dir):
+def save_pytorch_model(model, model_dir, model_name):
     os.makedirs(model_dir, exist_ok=True)
     print("Saving PyTorch model to {}".format(model_dir))
-    save_path = os.path.join(model_dir, MODEL_NAME)
+    save_path = os.path.join(model_dir, model_name)
     torch.save(model.state_dict(), save_path)

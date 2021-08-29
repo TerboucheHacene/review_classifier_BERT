@@ -28,10 +28,10 @@ from review_cl.data_prep import create_data_loader
 def parse_args():
     parser = argparse.ArgumentParser()
     # CLI args
-    parser.add_argument('--batch_size', type=int, default=64)
+    parser.add_argument('--batch_size', type=int, default=128)
     parser.add_argument('--max_epochs', type=int, default=1)
     parser.add_argument('--freeze_bert_layer', type=eval, default=False)
-    parser.add_argument('--learning_rate', type=float, default=0.001)
+    parser.add_argument('--learning_rate', type=float, default=0.0001)
     parser.add_argument('--momentum', type=float, default=0.5)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--max_seq_length', type=int, default=128)
@@ -43,7 +43,7 @@ def parse_args():
         '--validation_data', type=str, default="./output_data/sentiment/train.tsv"
     )
     parser.add_argument('--output_dir', type=str, default="./results/")
-    parser.add_argument('--num_gpus', type=int, default=0)
+    parser.add_argument('--num_gpus', type=int, default=1)
     return parser.parse_args()
 
 
@@ -69,7 +69,7 @@ def main():
     model = SequenceClassificationModel(
         bert_model=roberta_model,
         num_labels=3,
-        freeze_bert_layer=True,
+        freeze_bert_layer=False,
         learning_rate=args.learning_rate,
         max_epochs=args.max_epochs,
         batch_size=args.batch_size,
@@ -80,7 +80,7 @@ def main():
         max_epochs=args.max_epochs,
         accelerator=None,
         num_sanity_val_steps=-1,
-        val_check_interval=0.05,
+        val_check_interval=0.5,
         terminate_on_nan=True,
         logger=experiment,
         log_every_n_steps=1,
@@ -95,8 +95,8 @@ def main():
 
     trainer.fit(model, train_data_loader, val_data_loader)
 
-    save_transformer_model(model, args.model_dir)
-    save_pytorch_model(model, args.model_dir)
+    save_transformer_model(model.bert_model, args.output_dir)
+    save_pytorch_model(model.bert_model, args.output_dir, model_name=MODEL_NAME)
 
 
 if __name__ == '__main__':
