@@ -18,6 +18,8 @@ comet-ml = "^3.9.1"
 pandasql = "^0.7.3"
 nltk = "^3.6.2"
 transformers = "^4.9.2"
+fastapi = "^0.68.1"
+uvicorn = "^0.15.0"
 
 
 
