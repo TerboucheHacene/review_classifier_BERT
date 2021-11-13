@@ -55,7 +55,7 @@ PRE_TRAINED_MODEL_NAME = 'roberta-base'
 def main():
     # Create an experiment with your api key
     experiment = CometLogger(
-        api_key="F8z2rvZxchPyTT2l1IawCAE7G",
+        #api_key="F8z2rvZxchPyTT2l1IawCAE7G",
         project_name="review-classification-bert",
         workspace="ihssen",
     )
