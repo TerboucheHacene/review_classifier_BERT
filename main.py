@@ -19,7 +19,6 @@ from pytorch_lightning.plugins import DDPPlugin
 
 from transformers import RobertaModel, RobertaConfig
 from transformers import RobertaForSequenceClassification
-
 from review_cl.models import SequenceClassificationModel
 from review_cl.utils import configure_model, save_transformer_model, save_pytorch_model
 from review_cl.data_prep import create_data_loader
@@ -43,7 +42,7 @@ def parse_args():
         '--validation_data', type=str, default="./output_data/sentiment/train.tsv"
     )
     parser.add_argument('--output_dir', type=str, default="./results/")
-    parser.add_argument('--num_gpus', type=int, default=1)
+    parser.add_argument('--num_gpus', type=int, default=0)
     return parser.parse_args()
 
 
@@ -55,7 +54,7 @@ PRE_TRAINED_MODEL_NAME = 'roberta-base'
 def main():
     # Create an experiment with your api key
     experiment = CometLogger(
-        #api_key="F8z2rvZxchPyTT2l1IawCAE7G",
+        api_key="F8z2rvZxchPyTT2l1IawCAE7G",
         project_name="review-classification-bert",
         workspace="ihssen",
     )

@@ -131,7 +131,5 @@ dmypy.json
 lightning_logs/
 review-classification-bert/
 results/
-<<<<<<< HEAD
 logs/
-=======
->>>>>>> d340e7976e974101fb6ad738e48fbaa4deca1a6f
+data/

@@ -23,6 +23,7 @@ app = FastAPI(
 def load_artifacts():
     global artifacts
     artifacts = json.loads(open("logs/config.json", "r").read())
+    print(artifacts)
     artifacts["model"] = model_fn(model_dir="logs/")
     print("Ready for inference!")
 
@@ -68,7 +69,7 @@ def _index(request: Request):
 @app.get("/params/{param}", tags=["Parameters"])
 @construct_response
 def _param(request: Request, param: str):
-    """Get a specific parameter's value used for a run."""
+    """Get a specific parameter's value about the model or the training process"""
     response = {
         "message": HTTPStatus.OK.phrase,
         "status-code": HTTPStatus.OK,
@@ -80,7 +81,7 @@ def _param(request: Request, param: str):
 @app.post("/predict", tags=["Prediction"])
 @construct_response
 def _predict(request: Request, payload: PredictReview) -> Dict:
-    """Predict tags for a list of texts using the best run."""
+    """Predict if a review is positive, negative or neutral"""
     # Predict
     reviews = [item.review for item in payload.reviews]
     predictions = predict_fn(input_data=reviews, model=artifacts["model"])

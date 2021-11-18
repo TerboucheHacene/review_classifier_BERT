@@ -1,0 +1,18 @@
+version: "3.2"
+
+
+services:
+  inference:
+    image: haceneterbouche/review_model:1
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
