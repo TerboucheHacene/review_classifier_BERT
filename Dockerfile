@@ -11,8 +11,9 @@ ENV PYTHONFAULTHANDLER=1 \
 
 
 RUN mkdir MyApp
-WORKDIR MyApp
+WORKDIR /MyApp
 COPY pyproject.toml pyproject.toml
+COPY poetry.lock poetry.lock
 COPY app app
 COPY review_cl review_cl
 COPY logs logs

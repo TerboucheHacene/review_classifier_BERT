@@ -1,10 +1,9 @@
 version: "3.2"
 
-
 services:
   inference:
-    image: haceneterbouche/review_model:1
-    build: 
+    image: haceneterbouche/review_model:latest
+    build:
       context: .
       dockerfile: Dockerfile
     ports:

@@ -1,15 +1,9 @@
-from fastapi import FastAPI, Request
-
-
-from datetime import datetime
-from functools import wraps
-from http import HTTPStatus
-from pathlib import Path
-from typing import Dict, Optional, List
-import json
-
+from fastapi import FastAPI, Request, Depends, status, Path
+from fastapi.exceptions import HTTPException
+from typing import Dict, Optional
+from transformers import RobertaForSequenceClassification
 from review_cl.inference import model_fn, predict_fn
-from app.schemas import PredictReview
+from app.schemas import PredictReviewInput, PredictReviewOutput, Settings
 
 # Define application
 app = FastAPI(
@@ -18,76 +12,64 @@ app = FastAPI(
     version="0.1",
 )
 
+settings = Settings()
+
+
+class ReviewClassification:
+    model: Optional[RobertaForSequenceClassification]
+    artifacts: Optional[Dict]
+
+    def load_model(self):
+        model_and_artifacts = model_fn(
+            model_dir=settings.model_path,
+            model_config_path=settings.config_file,
+            model_name=settings.MODEL_NAME,
+        )
+        model, artifacts = model_and_artifacts
+        self.model = model.eval()
+        self.artifacts = artifacts
+        self.properties = list(artifacts.keys())
+
+    async def predict(self, input: PredictReviewInput) -> PredictReviewOutput:
+        if not self.model:
+            raise RuntimeError
+        prediction = predict_fn(input_data=input.review, model=self.model)
+        return PredictReviewOutput(**prediction)
+
+
+classification_model = ReviewClassification()
+
 
 @app.on_event("startup")
 def load_artifacts():
-    global artifacts
-    artifacts = json.loads(open("logs/config.json", "r").read())
-    print(artifacts)
-    artifacts["model"] = model_fn(model_dir="logs/")
+    classification_model.load_model()
     print("Ready for inference!")
 
 
-def construct_response(f):
-    """Construct a JSON response for an endpoint's results."""
-
-    @wraps(f)
-    def wrap(request: Request, *args, **kwargs):
-        results = f(request, *args, **kwargs)
-
-        # Construct response
-        response = {
-            "message": results["message"],
-            "method": request.method,
-            "status-code": results["status-code"],
-            "timestamp": datetime.now().isoformat(),
-            "url": request.url._url,
-        }
-
-        # Add data
-        if "data" in results:
-            response["data"] = results["data"]
-
-        return response
-
-    return wrap
-
-
-@app.get("/", tags=["General"])
-@construct_response
+@app.get("/", tags=["General"], status_code=status.HTTP_200_OK)
 def _index(request: Request):
     """Health check."""
-    print(request.method)
     response = {
-        "message": HTTPStatus.OK.phrase,
-        "status-code": HTTPStatus.OK,
-        "data": {},
+        "data": "Everything is working as exepected",
     }
     return response
 
 
-@app.get("/params/{param}", tags=["Parameters"])
-@construct_response
-def _param(request: Request, param: str):
+@app.get("/params/{param}", tags=["Parameters"], status_code=status.HTTP_200_OK)
+def _param(param: str = Path(...)) -> Dict:
     """Get a specific parameter's value about the model or the training process"""
-    response = {
-        "message": HTTPStatus.OK.phrase,
-        "status-code": HTTPStatus.OK,
-        "data": {param: artifacts.get(param, "")},
-    }
-    return response
+    if param not in classification_model.properties:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"this parameter {param} is not found ",
+        )
+    return {param: classification_model.artifacts.get(param)}
 
 
-@app.post("/predict", tags=["Prediction"])
-@construct_response
-def _predict(request: Request, payload: PredictReview) -> Dict:
+@app.post("/predict", tags=["Prediction"], status_code=status.HTTP_200_OK)
+async def _predict(
+    output: PredictReviewOutput = Depends(classification_model.predict),
+) -> PredictReviewOutput:
     """Predict if a review is positive, negative or neutral"""
     # Predict
-    reviews = [item.review for item in payload.reviews]
-    predictions = predict_fn(input_data=reviews, model=artifacts["model"])
-    response = {
-        "message": HTTPStatus.OK.phrase,
-        "status-code": HTTPStatus.OK,
-        "data": predictions,
-    }
-    return response
+    return output

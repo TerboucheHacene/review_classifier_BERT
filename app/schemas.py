@@ -1,25 +1,22 @@
-from typing import List
+from pathlib import Path
+from fastapi import Body, Query
+from pydantic import BaseModel, BaseSettings
 
-from fastapi import Query
-from pydantic import BaseModel, validator
 
-
-class Text(BaseModel):
+class PredictReviewInput(BaseModel):
     review: str = Query(None, min_length=1)
 
-
-class PredictReview(BaseModel):
-    reviews: List[Text]
-
-    @validator("reviews")
-    def list_must_not_be_empty(cls, value):
-        if not len(value):
-            raise ValueError("List of texts to classify cannot be empty.")
-        return value
-
     class Config:
-        schema_extra = {
-            "example": {
-                "reviews": [{"review": "I am happy."}, {"review": "I am not happy."}]
-            }
-        }
+        schema_extra = {"example": {"review": "I am happy."}}
+
+
+class PredictReviewOutput(BaseModel):
+    probability: float
+    predicted_label: str
+    predicted_index: int
+
+
+class Settings(BaseSettings):
+    model_path: Path = "logs/"
+    config_file: Path = "logs/config.json"
+    MODEL_NAME: str = "model.pth"
