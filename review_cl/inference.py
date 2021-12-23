@@ -1,6 +1,4 @@
 import json
-import sys
-import logging
 import torch
 from torch import nn
 from transformers import (
@@ -10,7 +8,6 @@ from transformers import (
     RobertaConfig,
 )
 
-MODEL_NAME = "model.pth"
 
 PRE_TRAINED_MODEL_NAME = "roberta-base"
 MAX_SEQ_LEN = 128

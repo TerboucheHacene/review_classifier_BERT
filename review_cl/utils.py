@@ -1,8 +1,9 @@
 import os
 from transformers import RobertaModel, RobertaConfig
 import torch
+import glob
 
-PRE_TRAINED_MODEL_NAME = 'roberta-base'
+PRE_TRAINED_MODEL_NAME = "roberta-base"
 
 
 def configure_model():

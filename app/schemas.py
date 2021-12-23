@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import Body, Query
+from fastapi import Query
 from pydantic import BaseModel, BaseSettings
 
 
