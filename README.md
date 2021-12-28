@@ -10,15 +10,12 @@
 * Install [poetry](https://python-poetry.org/docs/) (a tool for dependency management and packaging in Python) 
     
         curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-    
 * Install the dependecies && activate the virtual environment
 
         poetry install && poetry shell
-
 * To prepare the data:  
 
         python review_cl/process.py
-        
 * To train the model:
 
         python main.py 
@@ -54,15 +51,12 @@ We use this docker image as the base image (from the developper of the FastAPI p
 * To build the image:
 
         docker image build -t review_app .
-
 * To run the container locally:
 
         docker container run -d -p 8080:80 --name myapp review_app
-
 * To run the app using docker-compose:
 
         docker-compose up 
-
 * To run the app using docker swarm:
 
         docker stack deploy -c docker-compose.yml MyApp
