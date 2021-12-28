@@ -19,4 +19,4 @@ class PredictReviewOutput(BaseModel):
 class Settings(BaseSettings):
     model_path: Path = "logs/"
     config_file: Path = "logs/config.json"
-    MODEL_NAME: str = "model.pth"
+    model_name: str = "model.pth"

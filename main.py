@@ -27,34 +27,34 @@ from review_cl.data_prep import create_data_loader
 def parse_args():
     parser = argparse.ArgumentParser()
     # CLI args
-    parser.add_argument('--batch_size', type=int, default=128)
-    parser.add_argument('--max_epochs', type=int, default=1)
-    parser.add_argument('--freeze_bert_layer', type=eval, default=False)
-    parser.add_argument('--learning_rate', type=float, default=0.0001)
-    parser.add_argument('--momentum', type=float, default=0.5)
-    parser.add_argument('--seed', type=int, default=42)
-    parser.add_argument('--max_seq_length', type=int, default=128)
+    parser.add_argument("--batch_size", type=int, default=128)
+    parser.add_argument("--max_epochs", type=int, default=1)
+    parser.add_argument("--freeze_bert_layer", type=eval, default=False)
+    parser.add_argument("--learning_rate", type=float, default=0.0001)
+    parser.add_argument("--momentum", type=float, default=0.5)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--max_seq_length", type=int, default=128)
     # Container environment
     parser.add_argument(
-        '--train_data', type=str, default="./output_data/sentiment/train.tsv"
+        "--train_data", type=str, default="./output_data/sentiment/train.tsv"
     )
     parser.add_argument(
-        '--validation_data', type=str, default="./output_data/sentiment/train.tsv"
+        "--validation_data", type=str, default="./output_data/sentiment/train.tsv"
     )
-    parser.add_argument('--output_dir', type=str, default="./results/")
-    parser.add_argument('--num_gpus', type=int, default=0)
+    parser.add_argument("--output_dir", type=str, default="./results/")
+    parser.add_argument("--num_gpus", type=int, default=0)
     return parser.parse_args()
 
 
-MODEL_NAME = 'model.pth'
+MODEL_NAME = "model.pth"
 # Hugging face list of models: https://huggingface.co/models
-PRE_TRAINED_MODEL_NAME = 'roberta-base'
+PRE_TRAINED_MODEL_NAME = "roberta-base"
 
 
 def main():
     # Create an experiment with your api key
     experiment = CometLogger(
-        api_key="F8z2rvZxchPyTT2l1IawCAE7G",
+        api_key="xxxxxxxxxxxxxxxx",
         project_name="review-classification-bert",
         workspace="ihssen",
     )
@@ -62,7 +62,7 @@ def main():
     config = configure_model()
     # roberta_model = RobertaModel.from_pretrained('roberta-base', config=config)
     roberta_model = RobertaForSequenceClassification.from_pretrained(
-        'roberta-base', config=config
+        "roberta-base", config=config
     )
 
     model = SequenceClassificationModel(
@@ -98,7 +98,7 @@ def main():
     save_pytorch_model(model.bert_model, args.output_dir, model_name=MODEL_NAME)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     args = parse_args()
-    print('Loaded arguments:')
+    print("Loaded arguments:")
     main()

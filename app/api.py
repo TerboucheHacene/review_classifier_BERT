@@ -23,7 +23,7 @@ class ReviewClassification:
         model_and_artifacts = model_fn(
             model_dir=settings.model_path,
             model_config_path=settings.config_file,
-            model_name=settings.MODEL_NAME,
+            model_name=settings.model_name,
         )
         model, artifacts = model_and_artifacts
         self.model = model.eval()
