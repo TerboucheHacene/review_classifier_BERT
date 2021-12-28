@@ -9,11 +9,11 @@
 * Clone this repo
 * Install [poetry](https://python-poetry.org/docs/) (a tool for dependency management and packaging in Python) 
     
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
     
 * Install the dependecies && activate the virtual environment
 
-    poetry install && poetry shell
+        poetry install && poetry shell
 
 # Data
 The **[Women's E-Commerce Clothing Reviews](https://www.kaggle.com/nicapotato/womens-ecommerce-clothing-reviews)** dataset was used to train and test the model. It contains reviews written by customers. This dataset includes 23486 rows and 10 feature variables. However, only the column **Review Text** was used to predict the **Rating** column.
@@ -45,16 +45,18 @@ We use this docker image as the base image (from the developper of the FastAPI p
 
 * To build the image:
 
-    docker image build -t review_app .
+        docker image build -t review_app .
 
 * To run the container locally:
 
-    docker container run -d -p 8080:80 --name myapp review_app
+        docker container run -d -p 8080:80 --name myapp review_app
 
 * To run the app using docker-compose:
 
-    docker-compose up 
+        docker-compose up 
 
 * To run the app using docker swarm:
 
-    docker stack deploy -c docker-compose.yml MyApp
+        docker stack deploy -c docker-compose.yml MyApp
+
+
