@@ -15,6 +15,14 @@
 
         poetry install && poetry shell
 
+* To prepare the data:  
+
+        python review_cl/process.py
+        
+* To train the model:
+
+        python main.py 
+
 # Data
 The **[Women's E-Commerce Clothing Reviews](https://www.kaggle.com/nicapotato/womens-ecommerce-clothing-reviews)** dataset was used to train and test the model. It contains reviews written by customers. This dataset includes 23486 rows and 10 feature variables. However, only the column **Review Text** was used to predict the **Rating** column.
 
@@ -27,7 +35,7 @@ The target variable is a positive ordinal integer variable for the product score
 # Modeling
 A BERT based model is fine-tuned to predict the sentiment. We used the **[RoBERTa](https://arxiv.org/abs/1907.11692)** model (A Robustly Optimized BERT Pretraining)
 
-This model is implemented is [Transformers Hugging Face library](https://huggingface.co/docs/transformers/master/en/model_doc/roberta#overview). 
+This model is implemented in [Transformers Hugging Face library](https://huggingface.co/docs/transformers/master/en/model_doc/roberta#overview). 
 
 # Streamlit App
 You can run the app locally:
